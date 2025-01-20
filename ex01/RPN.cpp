@@ -1,64 +1,97 @@
 #include "RPN.hpp"
 
-RPN::RPN(std::string str)
+RPN::RPN(const std::string& str)
 {
-	int i;
-	int res;
-	int num;
-	char cur;
+    if (!validateInput(str))
+    {
+        std::cerr << "Error: Invalid input format" << std::endl;
+        exit(1);
+    }
 
-	i = 0;
-	while (i < str.size())
-	{
-		while (i < str.size() && str[i] == ' ')
-			i++;
+    for (size_t i = 0; i < str.size(); i++)
+    {
+        if (str[i] == ' ')
+            continue;
 
-		if (i >= str.size())
-			break;
+        if (isdigit(str[i]))
+        {
+            stack.push(str[i] - '0');
+            continue;
+        }
 
-		if (isdigit(str[i]))
-			stack.push(str[i] - '0');
-		else
-		{
-			cur = str[i];
+        if (stack.size() < 2)
+        {
+            std::cerr << "Error: Insufficient operands" << std::endl;
+            exit(1);
+        }
 
-			if (stack.size() < 2)
-			{
-				std::cerr << "Error: Insufficient operands for operation " << cur << std::endl;
-				exit (1);
-			}
+        int num2 = stack.top();
+        stack.pop();
+        int num1 = stack.top();
+        stack.pop();
 
-			int num2 = stack.top();
-			stack.pop();
+        switch (str[i])
+        {
+            case '+':
+                stack.push(num1 + num2);
+                break;
+            case '-':
+                stack.push(num1 - num2);
+                break;
+            case '*':
+                stack.push(num1 * num2);
+                break;
+            case '/':
+                if (num2 == 0)
+                {
+                    std::cerr << "Error: Division by zero" << std::endl;
+                    exit(1);
+                }
+                stack.push(num1 / num2);
+                break;
+            default:
+                std::cerr << "Error: Invalid operator" << std::endl;
+                exit(1);
+        }
+    }
 
-			int num1 = stack.top();
-			stack.pop();
+    if (stack.size() != 1)
+    {
+        std::cerr << "Error: Invalid expression" << std::endl;
+        exit(1);
+    }
 
-			switch (cur)
-			{
-				case '+':
-					res = num1 + num2;
-					break;
-				case '-':
-					res = num1 - num2;
-					break;
-				case '/':
-					res = num1 / num2;
-					break;
-				case '*':
-					res = num1 * num2;
-					break;
-				default:
-					std::cerr << "Error: Unknown operator " << cur << std::endl;
-					exit (1);
-			}
-			stack.push(res);
-		}
-		i++;
-	}
-	res = stack.top();
-	std::cout << "Result: " << res << std::endl;
+    std::cout << stack.top() << std::endl;
+}
 
+bool RPN::validateInput(const std::string& str) const
+{
+    bool hasDigit = false;
+    bool hasOperator = false;
+
+    for (size_t i = 0; i < str.length(); i++)
+    {
+        char c = str[i];
+        if (c == ' ')
+            continue;
+        if (isdigit(c))
+            hasDigit = true;
+        else if (c == '+' || c == '-' || c == '*' || c == '/')
+            hasOperator = true;
+        else
+            return false;
+    }
+
+    return hasDigit && hasOperator;
 }
 
 RPN::~RPN() {}
+
+RPN::RPN(const RPN& other) : stack(other.stack) {}
+
+RPN& RPN::operator=(const RPN& other)
+{
+    if (this != &other)
+        stack = other.stack;
+    return *this;
+}

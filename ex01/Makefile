@@ -1,6 +1,6 @@
 CC = c++
 CFLAGS = -Wall -Wextra -Werror -std=c++98
-NAME = output
+NAME = RPN
 SRC = RPN.cpp main.cpp
 OBJS = $(SRC:.cpp=.o)
 
@@ -9,13 +9,14 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
-
-fclean: clean
-	rm -rf $(NAME)
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(OBJS)
+	rm -f $(OBJS)
 
+fclean: clean
+	rm -f $(NAME)
 
 re: fclean all
 

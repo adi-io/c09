@@ -1,15 +1,27 @@
+#ifndef BITCOINEXCHANGE_HPP
+#define BITCOINEXCHANGE_HPP
+
 #include <string>
-#include <vector>
 #include <map>
 
 class BTC
 {
-	public:
-		std::map<std::string, float> exchangeRates;
-		std::vector<std::pair<std::string, float>> inputData;
-		BTC();
-		~BTC();
-		void	parser();
-		void	parser2();
-		void	print();
+    private:
+        std::map<std::string, float> exchangeRates;
+        std::string firstDate;
+
+        bool isDateValid(const std::string& date) const;
+        void processLine(const std::string& line);
+        float getExchangeRate(const std::string& date) const;
+
+    public:
+        BTC();
+        BTC(const BTC& other);
+        ~BTC();
+        BTC& operator=(const BTC& other);
+
+        bool parser(const std::string& filename);
+        bool parser2(const std::string& filename);
 };
+
+#endif

@@ -1,14 +1,22 @@
+#ifndef RPN_HPP
+#define RPN_HPP
+
 #include <iostream>
 #include <stack>
 #include <string>
+#include <cstdlib>
 
-class	RPN
+class RPN
 {
-	private:
-		std::stack<int> stack;
-	public:
-		RPN(std::string str);
-		RPN(const RPN &var);
-		~RPN();
-		RPN &operator=(const RPN &var);
+    private:
+        std::stack<int> stack;
+        bool validateInput(const std::string& str) const;
+
+    public:
+        RPN(const std::string& str);
+        ~RPN();
+        RPN(const RPN& other);
+        RPN& operator=(const RPN& other);
 };
+
+#endif
